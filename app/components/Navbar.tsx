@@ -4,17 +4,11 @@ import * as motion from 'motion/react-client';
 import { AppEmoji } from './EmojiWrapper';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useUser, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 
-interface NavbarProps {
-  isAuthenticated?: boolean;
-  user?: {
-    name?: string;
-    imageUrl?: string;
-  };
-}
-
-export function Navbar({ isAuthenticated = false, user }: NavbarProps) {
+export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isSignedIn } = useUser();
 
   return (
     <motion.header
@@ -55,7 +49,7 @@ export function Navbar({ isAuthenticated = false, user }: NavbarProps) {
           </Link>
 
           {/* Authenticated Navigation */}
-          {isAuthenticated ? (
+          {isSignedIn ? (
             <>
               <Link href='/dashboard'>
                 <motion.span
@@ -81,47 +75,40 @@ export function Navbar({ isAuthenticated = false, user }: NavbarProps) {
 
               {/* User Menu */}
               <div className='relative'>
-                <motion.button
-                  className='flex items-center space-x-2 text-gray-600 hover:text-gray-900'
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
-                >
-                  {user?.imageUrl ? (
-                    <img
-                      src={user.imageUrl}
-                      alt={user.name || 'User'}
-                      className='w-8 h-8 rounded-full'
-                    />
-                  ) : (
-                    <div className='w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center'>
-                      <AppEmoji name='technologist' width={20} />
-                    </div>
-                  )}
-                  <span className='hidden lg:block'>
-                    {user?.name || 'Profile'}
-                  </span>
-                </motion.button>
-                {/* User dropdown menu would go here */}
+                <UserButton
+                  appearance={{
+                    elements: {
+                      avatarBox: 'w-8 h-8',
+                      userButtonPopoverCard:
+                        'bg-white border border-gray-200 shadow-lg',
+                      userButtonPopoverActions: 'bg-white',
+                    },
+                  }}
+                />
               </div>
             </>
           ) : (
             /* Unauthenticated Navigation */
             <div className='flex items-center space-x-4'>
-              <motion.button
-                className='text-gray-600 hover:text-gray-900'
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                Sign In
-              </motion.button>
-              <motion.button
-                className='bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800'
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                Get Started
-              </motion.button>
+              <SignInButton mode='modal'>
+                <motion.button
+                  className='text-gray-600 hover:text-gray-900'
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                >
+                  Sign In
+                </motion.button>
+              </SignInButton>
+              <SignUpButton mode='modal'>
+                <motion.button
+                  className='bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800'
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                >
+                  Get Started
+                </motion.button>
+              </SignUpButton>
             </div>
           )}
         </div>
@@ -174,7 +161,7 @@ export function Navbar({ isAuthenticated = false, user }: NavbarProps) {
             </div>
           </Link>
 
-          {isAuthenticated ? (
+          {isSignedIn ? (
             <>
               <Link href='/dashboard'>
                 <div className='block py-2 text-gray-600 hover:text-gray-900'>
@@ -192,19 +179,27 @@ export function Navbar({ isAuthenticated = false, user }: NavbarProps) {
                 </div>
               </Link>
               <div className='pt-4 border-t border-gray-100'>
-                <button className='text-gray-600 hover:text-gray-900'>
-                  Sign Out
-                </button>
+                <UserButton
+                  appearance={{
+                    elements: {
+                      avatarBox: 'w-8 h-8',
+                    },
+                  }}
+                />
               </div>
             </>
           ) : (
             <div className='space-y-4 pt-4 border-t border-gray-100'>
-              <button className='block w-full text-left py-2 text-gray-600 hover:text-gray-900'>
-                Sign In
-              </button>
-              <button className='block w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800'>
-                Get Started
-              </button>
+              <SignInButton mode='modal'>
+                <button className='block w-full text-left py-2 text-gray-600 hover:text-gray-900'>
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode='modal'>
+                <button className='block w-full bg-gray-900 text-white py-3 rounded-lg hover:bg-gray-800'>
+                  Get Started
+                </button>
+              </SignUpButton>
             </div>
           )}
         </div>
