@@ -1,5 +1,6 @@
 import * as motion from 'motion/react-client';
 import { EmojiWrapper, AppEmoji } from './components/EmojiWrapper';
+import { Navbar } from './components/Navbar';
 
 export default function Home() {
   // Animation variants
@@ -35,6 +36,9 @@ export default function Home() {
   return (
     <EmojiWrapper>
       <div className='min-h-screen bg-white relative overflow-hidden'>
+        {/* Navbar */}
+        <Navbar isAuthenticated={false} />
+
         {/* Animated Background Particles */}
         <div className='absolute inset-0 overflow-hidden pointer-events-none'>
           <motion.div
@@ -99,50 +103,6 @@ export default function Home() {
           }}
           transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
         />
-
-        {/* Header */}
-        <motion.header
-          className='px-6 py-8 relative z-10'
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <nav className='max-w-6xl mx-auto flex items-center justify-between'>
-            <motion.div
-              className='flex items-center space-x-2 group'
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: 'spring', stiffness: 300 }}
-            >
-              <motion.div
-                whileHover={{ rotate: 180, scale: 1.2 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                <AppEmoji name='sparkles' width={28} />
-              </motion.div>
-              <span className='text-xl font-medium text-gray-900'>
-                Dev Mood
-              </span>
-            </motion.div>
-            <div className='flex items-center space-x-8'>
-              <motion.a
-                href='#'
-                className='text-gray-600 hover:text-gray-900'
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                Explore
-              </motion.a>
-              <motion.button
-                className='bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 cursor-pointer'
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                Sign In
-              </motion.button>
-            </div>
-          </nav>
-        </motion.header>
 
         {/* Hero Section */}
         <main className='px-6 relative z-10'>
