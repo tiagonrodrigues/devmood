@@ -133,7 +133,7 @@ export default function Home() {
                 Explore
               </motion.a>
               <motion.button
-                className='bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800'
+                className='bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 cursor-pointer'
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: 'spring', stiffness: 300 }}
@@ -185,7 +185,7 @@ export default function Home() {
               variants={fadeInUp}
             >
               <motion.button
-                className='bg-gray-900 text-white px-8 py-4 rounded-xl text-lg hover:bg-gray-800'
+                className='bg-gray-900 text-white px-8 py-4 rounded-xl text-lg hover:bg-gray-800 cursor-pointer'
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: 'spring', stiffness: 300 }}
@@ -193,7 +193,7 @@ export default function Home() {
                 Start Tracking
               </motion.button>
               <motion.button
-                className='border border-gray-200 text-gray-700 px-8 py-4 rounded-xl text-lg hover:border-gray-300 hover:bg-gray-50'
+                className='border border-gray-200 text-gray-700 px-8 py-4 rounded-xl text-lg hover:border-gray-300 hover:bg-gray-50 cursor-pointer'
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: 'spring', stiffness: 300 }}
@@ -439,6 +439,7 @@ export default function Home() {
               by{' '}
               <motion.a
                 href='https://github.com/tiagonrodrigues'
+                target='_blank'
                 className='text-gray-700 hover:text-gray-900'
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: 'spring', stiffness: 300 }}
@@ -463,6 +464,7 @@ export default function Home() {
               </motion.a>
               <motion.a
                 href='https://github.com/tiagonrodrigues/devmood'
+                target='_blank'
                 className='hover:text-gray-700'
                 whileHover={{ scale: 1.05 }}
               >
