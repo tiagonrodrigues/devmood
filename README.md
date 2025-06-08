@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DevMood ✨
 
-## Getting Started
+**Track your developer mood, one day at a time.**
 
-First, run the development server:
+DevMood is a simple and introspective app where developers can log their daily mood, what they're working on, and reflect on how they're feeling. It's designed to be both personal and optionally social, with an elegant experience built using Next.js, Prisma, Vercel and Clerk.
+
+---
+
+## 🚀 What is DevMood?
+
+DevMood is an app that allows developers to log their mood each day, along with a tech stack or project they worked on. It can be used as a personal journal or a way to share emotions with the dev community.
+
+---
+
+## 🌍 Live Preview
+
+\[https://devmood-kappa.vercel.app/]
+
+---
+
+## 🔐 Access Structure
+
+| Page          | Public Access  | Authenticated Access |
+| ------------- | -------------- | -------------------- |
+| `/` (landing) | ✅             | ✅                   |
+| `/explore`    | ✅ (read-only) | ✅                   |
+| `/mood/:id`   | ✅ (if public) | ✅ (if it's yours)   |
+| `/dashboard`  | ❌             | ✅ (private)         |
+| `/mood/new`   | ❌             | ✅                   |
+| `/profile`    | ❌             | ✅                   |
+
+---
+
+## 📅 Features
+
+- Log daily mood with emoji, 1–5 rating, comment, and tech stack
+- View personal history
+- Dashboard with aggregated stats (coming soon)
+- Public mood feed (anonymous or opt-in)
+- Private by default, with optional sharing
+
+---
+
+## 🛠️ Tech Stack
+
+- [Next.js 15](https://nextjs.org)
+- [Prisma ORM](https://www.prisma.io)
+- [Prisma Postgres](https://www.prisma.io/postgres)
+- [Prisma Accelerate](https://www.prisma.io/accelerate)
+- [Clerk](https://clerk.dev) for authentication
+- [Vercel](https://vercel.com) for deployment
+
+---
+
+## 🤖 Local Setup
 
 ```bash
+# Clone the repo
+git clone https://github.com/tiago/devmood.git
+cd devmood
+
+# Install dependencies
+npm install
+
+# Copy the .env and insert your DATABASE_URL and Clerk keys
+cp .env.example .env
+
+# Run migrations to setup the database
+npx prisma migrate dev --name init
+
+# Optionally seed with mock data
+npx prisma db seed
+
+# Start the dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📃 License
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+MIT License
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🌟 Contributions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Pull requests are welcome! If you want to suggest improvements or new features, feel free to open an issue.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Made with ❤️ by [Tiago Rodrigues](https://github.com/tiagonrodrigues)
