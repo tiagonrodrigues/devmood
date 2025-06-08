@@ -1,14 +1,14 @@
-# DevMood ✨
+# Dev Mood ✨
 
 **Track your developer mood, one day at a time.**
 
-DevMood is a simple and introspective app where developers can log their daily mood, what they're working on, and reflect on how they're feeling. It's designed to be both personal and optionally social, with an elegant experience built using Next.js, Prisma, Vercel and Clerk.
+Dev Mood is a simple and introspective app where developers can log their daily mood, what they're working on, and reflect on how they're feeling. It's designed to be both personal and optionally social, with an elegant experience built using Next.js, Prisma, Vercel and Clerk.
 
 ---
 
-## 🚀 What is DevMood?
+## 🚀 What is Dev Mood?
 
-DevMood is an app that allows developers to log their mood each day, along with a tech stack or project they worked on. It can be used as a personal journal or a way to share emotions with the dev community.
+Dev Mood is an app that allows developers to log their mood each day, along with a tech stack or project they worked on. It can be used as a personal journal or a way to share emotions with the dev community.
 
 ---
 
