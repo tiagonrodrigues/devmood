@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       tech: mood.tech,
       date: mood.date.toISOString(),
       user: {
-        email: mood.user.email,
+        email: mood.userId,
       },
     }));
 
