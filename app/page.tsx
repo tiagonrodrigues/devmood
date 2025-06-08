@@ -1,8 +1,13 @@
+'use client';
+
 import * as motion from 'motion/react-client';
 import { EmojiWrapper, AppEmoji } from './components/EmojiWrapper';
 import { Navbar } from './components/Navbar';
+import { useUser, SignUpButton } from '@clerk/nextjs';
+import Link from 'next/link';
 
 export default function Home() {
+  const { isSignedIn } = useUser();
   // Animation variants
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },
@@ -37,7 +42,7 @@ export default function Home() {
     <EmojiWrapper>
       <div className='min-h-screen bg-white relative overflow-hidden'>
         {/* Navbar */}
-        <Navbar isAuthenticated={false} />
+        <Navbar />
 
         {/* Animated Background Particles */}
         <div className='absolute inset-0 overflow-hidden pointer-events-none'>
@@ -144,22 +149,39 @@ export default function Home() {
               className='flex items-center justify-center space-x-4 mb-16'
               variants={fadeInUp}
             >
-              <motion.button
-                className='bg-gray-900 text-white px-8 py-4 rounded-xl text-lg hover:bg-gray-800 cursor-pointer'
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                Start Tracking
-              </motion.button>
-              <motion.button
-                className='border border-gray-200 text-gray-700 px-8 py-4 rounded-xl text-lg hover:border-gray-300 hover:bg-gray-50 cursor-pointer'
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                View Demo
-              </motion.button>
+              {isSignedIn ? (
+                <Link href='/dashboard'>
+                  <motion.button
+                    className='bg-gray-900 text-white px-8 py-4 rounded-xl text-lg hover:bg-gray-800 cursor-pointer'
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    Go to Dashboard
+                  </motion.button>
+                </Link>
+              ) : (
+                <SignUpButton mode='modal'>
+                  <motion.button
+                    className='bg-gray-900 text-white px-8 py-4 rounded-xl text-lg hover:bg-gray-800 cursor-pointer'
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    Start Tracking
+                  </motion.button>
+                </SignUpButton>
+              )}
+              <Link href='/explore'>
+                <motion.button
+                  className='border border-gray-200 text-gray-700 px-8 py-4 rounded-xl text-lg hover:border-gray-300 hover:bg-gray-50 cursor-pointer'
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                >
+                  View Demo
+                </motion.button>
+              </Link>
             </motion.div>
 
             {/* Feature Preview with Motion */}
