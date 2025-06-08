@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import * as motion from 'motion/react-client';
 import { EmojiWrapper, AppEmoji } from '../components/EmojiWrapper';
 import { Navbar } from '../components/Navbar';
@@ -105,51 +105,54 @@ export default function ExplorePage() {
   }, []);
 
   // Fetch moods
-  const fetchMoods = async (reset = false) => {
-    try {
-      if (reset) {
-        setLoading(true);
-        setOffset(0);
-      } else {
-        setLoadingMore(true);
+  const fetchMoods = useCallback(
+    async (reset = false) => {
+      try {
+        if (reset) {
+          setLoading(true);
+          setOffset(0);
+        } else {
+          setLoadingMore(true);
+        }
+
+        const currentOffset = reset ? 0 : offset;
+        const params = new URLSearchParams({
+          limit: '10',
+          offset: currentOffset.toString(),
+        });
+
+        if (selectedTech !== 'all') {
+          params.append('tech', selectedTech);
+        }
+        if (selectedRating !== 'all') {
+          params.append('rating', selectedRating);
+        }
+
+        const response = await fetch(`/api/moods?${params}`);
+        const data: MoodsResponse = await response.json();
+
+        if (reset) {
+          setMoods(data.data);
+        } else {
+          setMoods((prev) => [...prev, ...data.data]);
+        }
+
+        setHasMore(data.hasMore);
+        setOffset(currentOffset + data.data.length);
+      } catch (error) {
+        console.error('Error fetching moods:', error);
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
       }
-
-      const currentOffset = reset ? 0 : offset;
-      const params = new URLSearchParams({
-        limit: '10',
-        offset: currentOffset.toString(),
-      });
-
-      if (selectedTech !== 'all') {
-        params.append('tech', selectedTech);
-      }
-      if (selectedRating !== 'all') {
-        params.append('rating', selectedRating);
-      }
-
-      const response = await fetch(`/api/moods?${params}`);
-      const data: MoodsResponse = await response.json();
-
-      if (reset) {
-        setMoods(data.data);
-      } else {
-        setMoods((prev) => [...prev, ...data.data]);
-      }
-
-      setHasMore(data.hasMore);
-      setOffset(currentOffset + data.data.length);
-    } catch (error) {
-      console.error('Error fetching moods:', error);
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  };
+    },
+    [offset, selectedTech, selectedRating]
+  );
 
   // Initial load
   useEffect(() => {
     fetchMoods(true);
-  }, [selectedTech, selectedRating]);
+  }, [fetchMoods]);
 
   // Load more moods
   const handleLoadMore = () => {
