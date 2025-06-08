@@ -14,7 +14,7 @@ DevMood is an app that allows developers to log their mood each day, along with 
 
 ## 🌍 Live Preview
 
-\[https://devmood-kappa.vercel.app/]
+\[Coming soon](https://devmood-kappa.vercel.app/)
 
 ---
 
