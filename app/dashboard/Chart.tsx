@@ -8,6 +8,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  TooltipProps,
 } from 'recharts';
 import { AppEmoji } from '../components/EmojiWrapper';
 
@@ -18,7 +19,11 @@ interface ChartProps {
   }[];
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
     return (
       <div className='p-3 bg-white rounded-lg border border-gray-200 shadow-lg'>
