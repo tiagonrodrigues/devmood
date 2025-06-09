@@ -38,12 +38,12 @@ export default async function NewMood() {
 
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
-                Rating (1-10)
+                Rating (1-5)
               </label>
               <input
                 type='range'
                 min='1'
-                max='10'
+                max='5'
                 className='w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer'
               />
             </div>
@@ -61,13 +61,17 @@ export default async function NewMood() {
 
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
-                Tecnologias
+                What's on your mind? (Technology/Tool)
               </label>
               <input
                 type='text'
                 className='w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                placeholder='Ex: React, TypeScript, Node.js'
+                placeholder='Ex: React, VSCode, Docker (one word/tool)'
+                maxLength={20}
               />
+              <p className='text-xs text-gray-500 mt-1'>
+                Keep it short - single word or tool name works best
+              </p>
             </div>
 
             <div className='flex gap-4 pt-4'>
