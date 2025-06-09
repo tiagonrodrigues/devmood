@@ -61,7 +61,7 @@ export default async function NewMood() {
 
             <div>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
-                What's on your mind? (Technology/Tool)
+                What&apos;s on your mind? (Technology/Tool)
               </label>
               <input
                 type='text'
