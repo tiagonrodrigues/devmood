@@ -228,6 +228,7 @@ export default function ExplorePage() {
   const [offset, setOffset] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [showNewMoodModal, setShowNewMoodModal] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const moodFilters = [
     { label: 'All', value: 'all' },
@@ -474,9 +475,175 @@ export default function ExplorePage() {
 
             {/* Desktop Layout: Sidebar + Content */}
             <div className='flex flex-col lg:flex-row gap-8'>
+              {/* Mobile Filter Toggle Button */}
+              <div className='lg:hidden'>
+                <motion.button
+                  onClick={() => setShowMobileFilters(!showMobileFilters)}
+                  className='w-full bg-white/60 backdrop-blur-sm border border-gray-100 rounded-xl p-4 shadow-sm flex items-center justify-between'
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                >
+                  <div className='flex items-center space-x-2'>
+                    <AppEmoji name='gear' width={20} />
+                    <span className='font-medium text-gray-900'>
+                      Filters & Search
+                    </span>
+                  </div>
+                  <motion.div
+                    animate={{ rotate: showMobileFilters ? 180 : 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <AppEmoji name='down arrow' width={16} />
+                  </motion.div>
+                </motion.button>
+
+                {/* Mobile Filters Panel */}
+                <motion.div
+                  initial={false}
+                  animate={{
+                    height: showMobileFilters ? 'auto' : 0,
+                    opacity: showMobileFilters ? 1 : 0,
+                  }}
+                  transition={{ duration: 0.3 }}
+                  className='overflow-hidden'
+                >
+                  <div className='mt-4 bg-white/60 backdrop-blur-sm border border-gray-100 rounded-2xl p-6 shadow-sm space-y-6'>
+                    {/* Quick Stats - Now First */}
+                    <div className='grid grid-cols-2 gap-3'>
+                      <motion.div
+                        className='bg-gradient-to-br from-blue-50 to-purple-50 p-4 rounded-lg border border-blue-100'
+                        whileHover={{ scale: 1.02 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                      >
+                        <div className='flex items-center justify-between mb-1'>
+                          <span className='text-xs text-gray-600 font-medium'>
+                            Total Moods
+                          </span>
+                          <AppEmoji name='sparkles' width={14} />
+                        </div>
+                        <p className='text-2xl font-bold text-gray-900'>
+                          {moods.length > 0 ? `${moods.length}+` : '...'}
+                        </p>
+                      </motion.div>
+                      <motion.div
+                        className='bg-gradient-to-br from-orange-50 to-red-50 p-4 rounded-lg border border-orange-100'
+                        whileHover={{ scale: 1.02 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                      >
+                        <div className='flex items-center justify-between mb-1'>
+                          <span className='text-xs text-gray-600 font-medium'>
+                            Avg Rating
+                          </span>
+                          <AppEmoji name='fire' width={14} />
+                        </div>
+                        <p className='text-2xl font-bold text-gray-900'>
+                          {moods.length > 0
+                            ? (
+                                moods.reduce((acc, m) => acc + m.rating, 0) /
+                                moods.length
+                              ).toFixed(1)
+                            : '...'}
+                        </p>
+                      </motion.div>
+                    </div>
+
+                    {/* Search Bar - Second */}
+                    <div>
+                      <label className='block text-sm font-medium text-gray-700 mb-3'>
+                        <AppEmoji
+                          name='magnifying glass tilted left'
+                          width={16}
+                          className='inline mr-2'
+                        />
+                        Search Moods
+                      </label>
+                      <div className='relative'>
+                        <input
+                          type='text'
+                          placeholder='Search by comment or @username'
+                          className='w-full px-4 py-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all'
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        <AppEmoji
+                          name='magnifying glass tilted left'
+                          width={16}
+                          className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'
+                        />
+                        {searchQuery && (
+                          <motion.button
+                            onClick={() => setSearchQuery('')}
+                            className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                          >
+                            <AppEmoji name='cross mark' width={16} />
+                          </motion.button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Divider */}
+                    <div className='border-t border-gray-100'></div>
+
+                    {/* Tech Filter - Third */}
+                    <div>
+                      <label className='block text-sm font-medium text-gray-700 mb-3'>
+                        <AppEmoji
+                          name='laptop'
+                          width={16}
+                          className='inline mr-2'
+                        />
+                        Filter by Technology
+                      </label>
+                      <TechFilter
+                        technologies={technologies}
+                        selectedTech={selectedTech}
+                        onSelectTech={(tech) =>
+                          setSelectedTech(tech === 'All' ? 'all' : tech)
+                        }
+                      />
+                    </div>
+
+                    {/* Mood Filter - Last */}
+                    <div>
+                      <label className='block text-sm font-medium text-gray-700 mb-3'>
+                        <AppEmoji
+                          name='bar chart'
+                          width={16}
+                          className='inline mr-2'
+                        />
+                        Filter by Mood
+                      </label>
+                      <div className='flex flex-wrap gap-2'>
+                        {moodFilters.map((mood) => (
+                          <motion.button
+                            key={mood.value}
+                            onClick={() => setSelectedRating(mood.value)}
+                            className={`px-3 py-1.5 text-sm rounded-lg border transition-colors cursor-pointer ${
+                              mood.value === selectedRating
+                                ? 'border-purple-500 bg-purple-50 text-purple-700'
+                                : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50'
+                            }`}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            {mood.label}
+                          </motion.button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+
               {/* Left Sidebar - Filters (Desktop) */}
               <motion.aside
-                className='lg:w-80 lg:sticky lg:top-24 lg:h-fit'
+                className='hidden lg:block lg:w-80 lg:sticky lg:top-24 lg:h-fit'
                 variants={fadeInUp}
                 initial='hidden'
                 animate='visible'
@@ -645,12 +812,116 @@ export default function ExplorePage() {
                       {moods.map((mood, index) => (
                         <motion.div
                           key={mood.id}
-                          className='bg-white/70 backdrop-blur-sm border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300'
+                          className='bg-white/70 backdrop-blur-sm border border-gray-100 rounded-2xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300'
                           variants={fadeInUp}
                           whileHover={{ scale: 1.01, y: -2 }}
                           transition={{ type: 'spring', stiffness: 300 }}
                         >
-                          <div className='flex items-start space-x-4'>
+                          {/* Mobile Layout */}
+                          <div className='sm:hidden'>
+                            {/* Mobile Header - Profile, Rating, Date */}
+                            <div className='flex items-center justify-between mb-4'>
+                              <div className='flex items-center space-x-3'>
+                                {/* Profile Picture Placeholder */}
+                                <div className='w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-400 flex items-center justify-center text-white font-semibold'>
+                                  {getUsernameFromEmail(mood.user.email)
+                                    .charAt(0)
+                                    .toUpperCase()}
+                                </div>
+                                <div className='space-y-1'>
+                                  <div className='font-medium text-gray-900 text-sm'>
+                                    @{getUsernameFromEmail(mood.user.email)}
+                                  </div>
+                                  <div className='flex items-center space-x-1'>
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                      <div
+                                        key={i}
+                                        className={`w-1.5 h-1.5 rounded-full ${
+                                          i < mood.rating
+                                            ? 'bg-gradient-to-r from-blue-500 to-purple-500'
+                                            : 'bg-gray-200'
+                                        }`}
+                                      />
+                                    ))}
+                                    <span className='text-xs text-gray-500 ml-1'>
+                                      {mood.rating}/5
+                                    </span>
+                                  </div>
+                                  <div className='text-xs text-gray-400'>
+                                    {getRelativeTime(mood.date)}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Emoji and Comment */}
+                            <div className='flex space-x-3 mb-4'>
+                              <motion.div
+                                className='flex-shrink-0'
+                                animate={{
+                                  rotate: [0, 5, -5, 0],
+                                  scale: [1, 1.05, 1],
+                                }}
+                                transition={{
+                                  duration: 3,
+                                  repeat: Infinity,
+                                  delay: index * 0.5,
+                                }}
+                              >
+                                <AppEmoji
+                                  name={getEmojiName(mood.emoji)}
+                                  width={32}
+                                />
+                              </motion.div>
+                              <div className='flex-1'>
+                                {mood.comment && (
+                                  <p className='text-gray-700 text-sm leading-relaxed'>
+                                    {mood.comment}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Tech Tag and Actions in one line */}
+                            <div className='flex items-center justify-between'>
+                              {mood.tech && (
+                                <span className='inline-flex items-center px-2.5 py-1 rounded-full text-xs bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 border border-blue-200'>
+                                  <AppEmoji
+                                    name='gear'
+                                    width={12}
+                                    className='mr-1'
+                                  />
+                                  {mood.tech}
+                                </span>
+                              )}
+                              <div className='flex items-center space-x-1'>
+                                <motion.button
+                                  className='p-1.5 rounded-lg hover:bg-gray-100 transition-colors'
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
+                                >
+                                  <AppEmoji name='red heart' width={16} />
+                                </motion.button>
+                                <motion.button
+                                  className='p-1.5 rounded-lg hover:bg-gray-100 transition-colors'
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
+                                >
+                                  <AppEmoji name='speech balloon' width={16} />
+                                </motion.button>
+                                <motion.button
+                                  className='p-1.5 rounded-lg hover:bg-gray-100 transition-colors'
+                                  whileHover={{ scale: 1.1 }}
+                                  whileTap={{ scale: 0.9 }}
+                                >
+                                  <AppEmoji name='bookmark' width={16} />
+                                </motion.button>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Desktop Layout - Original */}
+                          <div className='hidden sm:flex items-start space-x-4'>
                             {/* Emoji */}
                             <motion.div
                               className='flex-shrink-0'
