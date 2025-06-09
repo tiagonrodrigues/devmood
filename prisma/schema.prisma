@@ -8,22 +8,42 @@ datasource db {
 }
 
 model User {
-    id        String   @id @default(cuid())
-    email     String   @unique
+    id        String    @id @default(cuid())
+    clerkId   String    @unique
+    email     String    @unique
+    username  String?   @unique
+    firstName String?
+    lastName  String?
     moods     Mood[]
-    createdAt DateTime @default(now())
+    comments  Comment[]
+    createdAt DateTime  @default(now())
 }
 
 model Mood {
-    id      String   @id @default(cuid())
-    emoji   String
-    rating  Int      @db.SmallInt
-    comment String?
-    tech    String
-    date    DateTime @default(now())
-    userId  String
-    user    User     @relation(fields: [userId], references: [id])
+    id         String    @id @default(cuid())
+    emoji      String
+    rating     Int       @db.SmallInt
+    comment    String?
+    tech       String
+    likesCount Int       @default(0)
+    date       DateTime  @default(now())
+    userId     String
+    user       User      @relation(fields: [userId], references: [id])
+    comments   Comment[]
 
     @@index([rating])
     @@index([tech])
+}
+
+model Comment {
+    id        String   @id @default(cuid())
+    text      String
+    createdAt DateTime @default(now())
+    moodId    String
+    mood      Mood     @relation(fields: [moodId], references: [id], onDelete: Cascade)
+    userId    String
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([moodId])
+    @@index([userId])
 }

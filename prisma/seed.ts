@@ -11,7 +11,11 @@ async function main() {
   const users = await Promise.all([
     prisma.user.create({
       data: {
+        clerkId: 'user_2f8k7c9j4m2p5x8y1q6w3z7b',
         email: 'alex@example.com',
+        username: 'alex',
+        firstName: 'Alex',
+        lastName: 'Doe',
         moods: {
           create: [
             {
@@ -41,7 +45,11 @@ async function main() {
     }),
     prisma.user.create({
       data: {
+        clerkId: 'user_8y1q6w3z7b2f8k7c9j4m2p5x',
         email: 'sarah@example.com',
+        username: 'sarah',
+        firstName: 'Sarah',
+        lastName: 'Smith',
         moods: {
           create: [
             {
@@ -71,7 +79,11 @@ async function main() {
     }),
     prisma.user.create({
       data: {
+        clerkId: 'user_7c9j4m2p5x8y1q6w3z7b2f8k',
         email: 'mike@example.com',
+        username: 'mike',
+        firstName: 'Mike',
+        lastName: 'Johnson',
         moods: {
           create: [
             {
@@ -94,7 +106,11 @@ async function main() {
     }),
     prisma.user.create({
       data: {
+        clerkId: 'user_1q6w3z7b2f8k7c9j4m2p5x8y',
         email: 'jane@example.com',
+        username: 'jane',
+        firstName: 'Jane',
+        lastName: 'Williams',
         moods: {
           create: [
             {
@@ -124,7 +140,11 @@ async function main() {
     }),
     prisma.user.create({
       data: {
+        clerkId: 'user_5x8y1q6w3z7b2f8k7c9j4m2p',
         email: 'tom@example.com',
+        username: 'tom',
+        firstName: 'Tom',
+        lastName: 'Brown',
         moods: {
           create: [
             {
@@ -147,7 +167,11 @@ async function main() {
     }),
     prisma.user.create({
       data: {
+        clerkId: 'user_3z7b2f8k7c9j4m2p5x8y1q6w',
         email: 'emma@example.com',
+        username: 'emma',
+        firstName: 'Emma',
+        lastName: 'Jones',
         moods: {
           create: [
             {
