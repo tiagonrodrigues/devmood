@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import * as motion from 'motion/react-client';
 import { EmojiWrapper, AppEmoji } from '../components/EmojiWrapper';
 import { Navbar } from '../components/Navbar';
@@ -70,6 +70,150 @@ const getRelativeTime = (dateString: string): string => {
   return date.toLocaleDateString();
 };
 
+// TechFilter Component
+interface TechFilterProps {
+  technologies: string[];
+  selectedTech: string;
+  onSelectTech: (tech: string) => void;
+}
+
+const TechFilter: React.FC<TechFilterProps> = ({
+  technologies,
+  selectedTech,
+  onSelectTech,
+}) => {
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  // Separate technologies into categories
+  const allTech = technologies.filter((t) => t !== 'All');
+  const hotTopics = allTech.slice(0, 3); // In a real app, this would be based on usage count
+  const popularTopics = allTech.slice(3, 7);
+  const moreTechnologies = allTech.slice(7);
+
+  return (
+    <div className='space-y-3'>
+      {/* All Button */}
+      <motion.button
+        onClick={() => onSelectTech('All')}
+        className={`px-3 py-1.5 text-sm rounded-lg border transition-colors cursor-pointer ${
+          selectedTech === 'all'
+            ? 'border-blue-500 bg-blue-50 text-blue-700'
+            : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+        }`}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        All
+      </motion.button>
+
+      {/* Hot Topics */}
+      {hotTopics.length > 0 && (
+        <div>
+          <p className='text-xs text-gray-500 mb-2 flex items-center'>
+            <AppEmoji name='fire' width={12} className='mr-1' />
+            Hot Topics
+          </p>
+          <div className='flex flex-wrap gap-2'>
+            {hotTopics.map((tech) => (
+              <motion.button
+                key={tech}
+                onClick={() => onSelectTech(tech)}
+                className={`px-3 py-1.5 text-sm rounded-lg border transition-colors cursor-pointer relative ${
+                  tech === selectedTech
+                    ? 'border-orange-500 bg-orange-50 text-orange-700'
+                    : 'border-gray-200 hover:border-orange-300 hover:bg-orange-50'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {tech}
+                <span className='absolute -top-1 -right-1'>
+                  <AppEmoji name='fire' width={12} />
+                </span>
+              </motion.button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Popular Topics */}
+      {popularTopics.length > 0 && (
+        <div>
+          <p className='text-xs text-gray-500 mb-2 flex items-center'>
+            <AppEmoji name='pushpin' width={12} className='mr-1' />
+            Popular
+          </p>
+          <div className='flex flex-wrap gap-2'>
+            {popularTopics.map((tech) => (
+              <motion.button
+                key={tech}
+                onClick={() => onSelectTech(tech)}
+                className={`px-3 py-1.5 text-sm rounded-lg border transition-colors cursor-pointer ${
+                  tech === selectedTech
+                    ? 'border-blue-500 bg-blue-50 text-blue-700'
+                    : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {tech}
+              </motion.button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* More Technologies Dropdown */}
+      {moreTechnologies.length > 0 && (
+        <div className='relative'>
+          <motion.button
+            onClick={() => setShowDropdown(!showDropdown)}
+            className='px-3 py-1.5 text-sm rounded-lg border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer flex items-center gap-2'
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <AppEmoji
+              name='down arrow'
+              width={12}
+              className={`transition-transform ${
+                showDropdown ? 'rotate-180' : ''
+              }`}
+            />
+            More Topics ({moreTechnologies.length})
+          </motion.button>
+
+          {/* Dropdown */}
+          {showDropdown && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className='absolute top-full mt-2 left-0 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-10 max-h-48 overflow-y-auto min-w-[200px]'
+            >
+              {moreTechnologies.map((tech) => (
+                <button
+                  key={tech}
+                  onClick={() => {
+                    onSelectTech(tech);
+                    setShowDropdown(false);
+                  }}
+                  className={`block w-full text-left px-3 py-2 text-sm rounded hover:bg-gray-50 transition-colors ${
+                    tech === selectedTech
+                      ? 'bg-blue-50 text-blue-700'
+                      : 'text-gray-700'
+                  }`}
+                >
+                  {tech}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function ExplorePage() {
   const [moods, setMoods] = useState<Mood[]>([]);
   const [technologies, setTechnologies] = useState<string[]>([]);
@@ -79,13 +223,14 @@ export default function ExplorePage() {
   const [selectedRating, setSelectedRating] = useState('all');
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const moodFilters = [
     { label: 'All', value: 'all' },
-    { label: 'Great (8-10)', value: '8' },
-    { label: 'Good (6-7)', value: '6' },
-    { label: 'Okay (4-5)', value: '4' },
-    { label: 'Rough (1-3)', value: '1' },
+    { label: 'Great (5)', value: '5' },
+    { label: 'Good (4)', value: '4' },
+    { label: 'Okay (3)', value: '3' },
+    { label: 'Rough (1-2)', value: '1' },
   ];
 
   // Fetch technologies for filter
@@ -93,7 +238,9 @@ export default function ExplorePage() {
     const fetchTechnologies = async () => {
       try {
         const response = await fetch('/api/moods/technologies');
-        const techs = await response.json();
+        const data = await response.json();
+        // Handle both old and new API response formats
+        const techs = Array.isArray(data) ? data : data.technologies || [];
         setTechnologies(['All', ...techs]);
       } catch (error) {
         console.error('Error fetching technologies:', error);
@@ -105,54 +252,55 @@ export default function ExplorePage() {
   }, []);
 
   // Fetch moods
-  const fetchMoods = useCallback(
-    async (reset = false) => {
-      try {
-        if (reset) {
-          setLoading(true);
-          setOffset(0);
-        } else {
-          setLoadingMore(true);
-        }
-
-        const currentOffset = reset ? 0 : offset;
-        const params = new URLSearchParams({
-          limit: '10',
-          offset: currentOffset.toString(),
-        });
-
-        if (selectedTech !== 'all') {
-          params.append('tech', selectedTech);
-        }
-        if (selectedRating !== 'all') {
-          params.append('rating', selectedRating);
-        }
-
-        const response = await fetch(`/api/moods?${params}`);
-        const data: MoodsResponse = await response.json();
-
-        if (reset) {
-          setMoods(data.data);
-        } else {
-          setMoods((prev) => [...prev, ...data.data]);
-        }
-
-        setHasMore(data.hasMore);
-        setOffset(currentOffset + data.data.length);
-      } catch (error) {
-        console.error('Error fetching moods:', error);
-      } finally {
-        setLoading(false);
-        setLoadingMore(false);
+  const fetchMoods = async (reset = false) => {
+    try {
+      if (reset) {
+        setLoading(true);
+        setOffset(0);
+      } else {
+        setLoadingMore(true);
       }
-    },
-    [offset, selectedTech, selectedRating]
-  );
+
+      const currentOffset = reset ? 0 : offset;
+      const params = new URLSearchParams({
+        limit: '10',
+        offset: currentOffset.toString(),
+      });
+
+      if (selectedTech !== 'all') {
+        params.append('tech', selectedTech);
+      }
+      if (selectedRating !== 'all') {
+        params.append('rating', selectedRating);
+      }
+      if (searchQuery) {
+        params.append('search', searchQuery);
+      }
+
+      const response = await fetch(`/api/moods?${params}`);
+      const data: MoodsResponse = await response.json();
+
+      if (reset) {
+        setMoods(data.data);
+      } else {
+        setMoods((prev) => [...prev, ...data.data]);
+      }
+
+      setHasMore(data.hasMore);
+      setOffset(currentOffset + data.data.length);
+    } catch (error) {
+      console.error('Error fetching moods:', error);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
 
   // Initial load
   useEffect(() => {
     fetchMoods(true);
-  }, [fetchMoods]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTech, selectedRating, searchQuery]);
 
   // Load more moods
   const handleLoadMore = () => {
@@ -288,53 +436,117 @@ export default function ExplorePage() {
                     />
                     Filter by Technology
                   </label>
-                  <div className='flex flex-wrap gap-2'>
-                    {technologies.map((tech) => (
-                      <motion.button
-                        key={tech}
-                        onClick={() =>
-                          setSelectedTech(tech === 'All' ? 'all' : tech)
-                        }
-                        className={`px-3 py-1.5 text-sm rounded-lg border transition-colors cursor-pointer ${
-                          (tech === 'All' ? 'all' : tech) === selectedTech
-                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                            : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-                        }`}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        {tech}
-                      </motion.button>
-                    ))}
-                  </div>
+                  <TechFilter
+                    technologies={technologies}
+                    selectedTech={selectedTech}
+                    onSelectTech={(tech) =>
+                      setSelectedTech(tech === 'All' ? 'all' : tech)
+                    }
+                  />
                 </div>
 
-                {/* Mood Filter */}
-                <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-3'>
-                    <AppEmoji
-                      name='bar chart'
-                      width={16}
-                      className='inline mr-2'
-                    />
-                    Filter by Mood
-                  </label>
-                  <div className='flex flex-wrap gap-2'>
-                    {moodFilters.map((mood) => (
-                      <motion.button
-                        key={mood.value}
-                        onClick={() => setSelectedRating(mood.value)}
-                        className={`px-3 py-1.5 text-sm rounded-lg border transition-colors cursor-pointer ${
-                          mood.value === selectedRating
-                            ? 'border-purple-500 bg-purple-50 text-purple-700'
-                            : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50'
-                        }`}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        {mood.label}
-                      </motion.button>
-                    ))}
+                {/* Right Column - Mood Filter + Search */}
+                <div className='space-y-6'>
+                  {/* Mood Filter */}
+                  <div>
+                    <label className='block text-sm font-medium text-gray-700 mb-3'>
+                      <AppEmoji
+                        name='bar chart'
+                        width={16}
+                        className='inline mr-2'
+                      />
+                      Filter by Mood
+                    </label>
+                    <div className='flex flex-wrap gap-2'>
+                      {moodFilters.map((mood) => (
+                        <motion.button
+                          key={mood.value}
+                          onClick={() => setSelectedRating(mood.value)}
+                          className={`px-3 py-1.5 text-sm rounded-lg border transition-colors cursor-pointer ${
+                            mood.value === selectedRating
+                              ? 'border-purple-500 bg-purple-50 text-purple-700'
+                              : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50'
+                          }`}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          {mood.label}
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Search Bar */}
+                  <div>
+                    <label className='block text-sm font-medium text-gray-700 mb-3'>
+                      <AppEmoji
+                        name='magnifying glass tilted left'
+                        width={16}
+                        className='inline mr-2'
+                      />
+                      Search Moods
+                    </label>
+                    <div className='relative'>
+                      <input
+                        type='text'
+                        placeholder='Search by comment or @username'
+                        className='w-full px-4 py-2 pl-10 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all'
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                      <AppEmoji
+                        name='magnifying glass tilted left'
+                        width={16}
+                        className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'
+                      />
+                      {searchQuery && (
+                        <motion.button
+                          onClick={() => setSearchQuery('')}
+                          className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                        >
+                          <AppEmoji name='cross mark' width={16} />
+                        </motion.button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Quick Stats */}
+                  <div className='grid grid-cols-2 gap-3'>
+                    <motion.div
+                      className='bg-gradient-to-br from-blue-50 to-purple-50 p-3 rounded-lg border border-blue-100'
+                      whileHover={{ scale: 1.02 }}
+                    >
+                      <div className='flex items-center justify-between'>
+                        <span className='text-xs text-gray-600'>
+                          Total Moods
+                        </span>
+                        <AppEmoji name='sparkles' width={14} />
+                      </div>
+                      <p className='text-lg font-semibold text-gray-900 mt-1'>
+                        {moods.length > 0 ? `${moods.length}+` : '...'}
+                      </p>
+                    </motion.div>
+                    <motion.div
+                      className='bg-gradient-to-br from-orange-50 to-red-50 p-3 rounded-lg border border-orange-100'
+                      whileHover={{ scale: 1.02 }}
+                    >
+                      <div className='flex items-center justify-between'>
+                        <span className='text-xs text-gray-600'>
+                          Avg Rating
+                        </span>
+                        <AppEmoji name='fire' width={14} />
+                      </div>
+                      <p className='text-lg font-semibold text-gray-900 mt-1'>
+                        {moods.length > 0
+                          ? (
+                              moods.reduce((acc, m) => acc + m.rating, 0) /
+                              moods.length
+                            ).toFixed(1)
+                          : '...'}
+                      </p>
+                    </motion.div>
                   </div>
                 </div>
               </div>
@@ -398,7 +610,7 @@ export default function ExplorePage() {
                                 @{getUsernameFromEmail(mood.user.email)}
                               </span>
                               <div className='flex items-center space-x-1'>
-                                {Array.from({ length: 10 }).map((_, i) => (
+                                {Array.from({ length: 5 }).map((_, i) => (
                                   <div
                                     key={i}
                                     className={`w-2 h-2 rounded-full ${
@@ -409,7 +621,7 @@ export default function ExplorePage() {
                                   />
                                 ))}
                                 <span className='text-sm text-gray-500 ml-2'>
-                                  {mood.rating}/10
+                                  {mood.rating}/5
                                 </span>
                               </div>
                             </div>
@@ -480,7 +692,7 @@ export default function ExplorePage() {
                     <motion.button
                       onClick={handleLoadMore}
                       disabled={loadingMore}
-                      className='bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg hover:from-blue-700 hover:to-purple-700 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed'
+                      className='bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg hover:from-blue-700 hover:to-purple-700 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
                       whileHover={{
                         scale: loadingMore ? 1 : 1.05,
                         y: loadingMore ? 0 : -2,
