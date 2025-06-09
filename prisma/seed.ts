@@ -11,6 +11,94 @@ async function main() {
   const users = await Promise.all([
     prisma.user.create({
       data: {
+        clerkId: 'user_2yEVhxSHVUPik2wu7Zx9ih81XSG',
+        email: 'tiago.rodrigues@developh.co',
+        username: 'tnrodrigues',
+        firstName: 'Tiago',
+        lastName: 'Rodrigues',
+        moods: {
+          create: [
+            {
+              emoji: '🚀',
+              rating: 5,
+              comment: 'Just launched a new feature! Feeling ecstatic! 🚀',
+              tech: 'Next.js',
+              date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 1),
+            },
+            {
+              emoji: '🤔',
+              rating: 3,
+              comment: 'Spent the day debugging a tricky CSS issue. 🤔',
+              tech: 'CSS',
+              date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
+            },
+            {
+              emoji: '💡',
+              rating: 4,
+              comment:
+                'Had a breakthrough with a complex algorithm. Big win! 💡',
+              tech: 'Python',
+              date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
+            },
+            {
+              emoji: '🔥',
+              rating: 5,
+              comment: 'Productive day, smashed through my to-do list. 🔥',
+              tech: 'TypeScript',
+              date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4),
+            },
+            {
+              emoji: '😅',
+              rating: 2,
+              comment:
+                'Struggling with a new library, the learning curve is steep. 😅',
+              tech: 'Vue.js',
+              date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
+            },
+            {
+              emoji: '🎉',
+              rating: 5,
+              comment:
+                'Team lunch and a successful sprint review. Great day! 🎉',
+              tech: 'React',
+              date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6),
+            },
+            {
+              emoji: '😴',
+              rating: 2,
+              comment: 'Late night fixing production bugs. Exhausted. 😴',
+              tech: 'Docker',
+              date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 8),
+            },
+            {
+              emoji: '✨',
+              rating: 4,
+              comment:
+                'Refactored a legacy component, it feels so clean now! ✨',
+              tech: 'JavaScript',
+              date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 9),
+            },
+            {
+              emoji: '🤯',
+              rating: 3,
+              comment:
+                'Mind-bending session on database optimization. So much to learn. 🤯',
+              tech: 'PostgreSQL',
+              date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10),
+            },
+            {
+              emoji: '😊',
+              rating: 4,
+              comment: 'Paired with a colleague and learned a lot. 😊',
+              tech: 'Node.js',
+              date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 11),
+            },
+          ],
+        },
+      },
+    }),
+    prisma.user.create({
+      data: {
         clerkId: 'user_2f8k7c9j4m2p5x8y1q6w3z7b',
         email: 'alex@example.com',
         username: 'alex',
