@@ -38,39 +38,21 @@ export function Navbar() {
         {/* Desktop Navigation */}
         <div className='hidden md:flex items-center space-x-8'>
           {/* Public Navigation */}
-          <Link href='/explore'>
-            <motion.span
-              className='text-gray-600 hover:text-gray-900 cursor-pointer'
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: 'spring', stiffness: 300 }}
-            >
-              Explore
-            </motion.span>
+          <Link
+            href='/explore'
+            className='text-gray-600 hover:text-gray-900 transition-colors'
+          >
+            Explore
           </Link>
 
           {/* Authenticated Navigation */}
           {isSignedIn ? (
             <>
-              <Link href='/dashboard'>
-                <motion.span
-                  className='text-gray-600 hover:text-gray-900 cursor-pointer'
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
-                >
-                  Dashboard
-                </motion.span>
-              </Link>
-
-              <Link href='/mood/new'>
-                <motion.button
-                  className='bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 cursor-pointer'
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
-                >
-                  <AppEmoji name='plus' width={16} />
-                  <span>New Mood</span>
-                </motion.button>
+              <Link
+                href='/dashboard'
+                className='text-gray-600 hover:text-gray-900 transition-colors'
+              >
+                Dashboard
               </Link>
 
               {/* User Menu */}
@@ -155,23 +137,20 @@ export function Navbar() {
         transition={{ duration: 0.3 }}
       >
         <div className='px-6 py-4 space-y-4'>
-          <Link href='/explore'>
-            <div className='block py-2 text-gray-600 hover:text-gray-900'>
-              Explore
-            </div>
+          <Link
+            href='/explore'
+            className='block py-2 text-gray-600 hover:text-gray-900'
+          >
+            Explore
           </Link>
 
           {isSignedIn ? (
             <>
-              <Link href='/dashboard'>
-                <div className='block py-2 text-gray-600 hover:text-gray-900'>
-                  Dashboard
-                </div>
-              </Link>
-              <Link href='/mood/new'>
-                <div className='block py-2 text-gray-600 hover:text-gray-900'>
-                  New Mood
-                </div>
+              <Link
+                href='/dashboard'
+                className='block py-2 text-gray-600 hover:text-gray-900'
+              >
+                Dashboard
               </Link>
               <Link href='/profile'>
                 <div className='block py-2 text-gray-600 hover:text-gray-900'>
