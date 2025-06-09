@@ -17,10 +17,13 @@ model User {
 model Mood {
     id      String   @id @default(cuid())
     emoji   String
-    rating  Int
+    rating  Int      @db.SmallInt
     comment String?
-    tech    String?
+    tech    String
     date    DateTime @default(now())
     userId  String
     user    User     @relation(fields: [userId], references: [id])
+
+    @@index([rating])
+    @@index([tech])
 }
