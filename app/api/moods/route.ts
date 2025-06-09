@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const tech = searchParams.get('tech');
     const rating = searchParams.get('rating');
+    const search = searchParams.get('search');
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
 
@@ -24,7 +25,29 @@ export async function GET(request: NextRequest) {
         // Rating filter
         rating && rating !== 'all'
           ? {
-              rating: parseInt(rating),
+              rating: {
+                gte: parseInt(rating),
+                ...(rating === '1' ? { lte: 2 } : {}),
+              },
+            }
+          : {},
+        // Search filter
+        search
+          ? {
+              OR: [
+                {
+                  comment: {
+                    contains: search,
+                    mode: 'insensitive' as const,
+                  },
+                },
+                {
+                  userId: {
+                    contains: search.startsWith('@') ? search.slice(1) : search,
+                    mode: 'insensitive' as const,
+                  },
+                },
+              ],
             }
           : {},
       ].filter((condition) => Object.keys(condition).length > 0),
