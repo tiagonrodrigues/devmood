@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import * as motion from 'motion/react-client';
 import { EmojiWrapper, AppEmoji } from '../components/EmojiWrapper';
 import { Navbar } from '../components/Navbar';
+import { NewMoodModal } from '../components/NewMoodModal';
+import { useAuth } from '@clerk/nextjs';
 
 // Types
 interface User {
@@ -215,6 +217,7 @@ const TechFilter: React.FC<TechFilterProps> = ({
 };
 
 export default function ExplorePage() {
+  const { isSignedIn } = useAuth();
   const [moods, setMoods] = useState<Mood[]>([]);
   const [technologies, setTechnologies] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -224,6 +227,7 @@ export default function ExplorePage() {
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showNewMoodModal, setShowNewMoodModal] = useState(false);
 
   const moodFilters = [
     { label: 'All', value: 'all' },
@@ -339,6 +343,24 @@ export default function ExplorePage() {
     },
   };
 
+  // Handle new mood submission
+  const handleNewMood = async (mood: {
+    emoji: string;
+    rating: number;
+    comment: string;
+    tech: string;
+  }) => {
+    try {
+      // TODO: Implement API call to create mood
+      console.log('Creating new mood:', mood);
+      setShowNewMoodModal(false);
+      // Refresh moods
+      fetchMoods(true);
+    } catch (error) {
+      console.error('Error creating mood:', error);
+    }
+  };
+
   return (
     <EmojiWrapper>
       <div className='min-h-screen bg-white relative overflow-hidden'>
@@ -384,99 +406,127 @@ export default function ExplorePage() {
 
         {/* Main Content */}
         <main className='px-6 py-8 relative z-10'>
-          <div className='max-w-4xl mx-auto'>
-            {/* Header Section */}
+          <div className='max-w-7xl mx-auto'>
+            {/* Header Section with New Mood Button */}
             <motion.div
-              className='text-center mb-12'
+              className='mb-8'
               variants={fadeInUp}
               initial='hidden'
               animate='visible'
             >
-              <motion.h1
-                className='text-5xl font-light text-gray-900 mb-4 tracking-tight'
-                variants={fadeInUp}
-              >
-                <motion.span
-                  className='bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent'
-                  animate={{
-                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                  }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                  style={{ backgroundSize: '200% 200%' }}
-                >
-                  Explore
-                </motion.span>{' '}
-                Dev Moods
-              </motion.h1>
-              <motion.p
-                className='text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed'
-                variants={fadeInUp}
-              >
-                Discover how developers around the world are feeling and what
-                they&apos;re working on
-              </motion.p>
-            </motion.div>
-
-            {/* Filters Section */}
-            <motion.div
-              className='bg-white/60 backdrop-blur-sm border border-gray-100 rounded-2xl p-6 mb-8 shadow-sm'
-              variants={fadeInUp}
-              initial='hidden'
-              animate='visible'
-              transition={{ delay: 0.2 }}
-            >
-              <div className='grid md:grid-cols-2 gap-6'>
-                {/* Tech Filter */}
+              <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
                 <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-3'>
-                    <AppEmoji
-                      name='laptop'
-                      width={16}
-                      className='inline mr-2'
-                    />
-                    Filter by Technology
-                  </label>
-                  <TechFilter
-                    technologies={technologies}
-                    selectedTech={selectedTech}
-                    onSelectTech={(tech) =>
-                      setSelectedTech(tech === 'All' ? 'all' : tech)
-                    }
-                  />
+                  <motion.h1
+                    className='text-5xl font-light text-gray-900 mb-4 tracking-tight'
+                    variants={fadeInUp}
+                  >
+                    <motion.span
+                      className='bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent'
+                      animate={{
+                        backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                      }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                      style={{ backgroundSize: '200% 200%' }}
+                    >
+                      Explore
+                    </motion.span>{' '}
+                    Dev Moods
+                  </motion.h1>
+                  <motion.p
+                    className='text-xl text-gray-600 max-w-2xl leading-relaxed'
+                    variants={fadeInUp}
+                  >
+                    Discover how developers around the world are feeling and
+                    what they&apos;re working on
+                  </motion.p>
                 </div>
 
-                {/* Right Column - Mood Filter + Search */}
-                <div className='space-y-6'>
-                  {/* Mood Filter */}
-                  <div>
-                    <label className='block text-sm font-medium text-gray-700 mb-3'>
-                      <AppEmoji
-                        name='bar chart'
-                        width={16}
-                        className='inline mr-2'
-                      />
-                      Filter by Mood
-                    </label>
-                    <div className='flex flex-wrap gap-2'>
-                      {moodFilters.map((mood) => (
-                        <motion.button
-                          key={mood.value}
-                          onClick={() => setSelectedRating(mood.value)}
-                          className={`px-3 py-1.5 text-sm rounded-lg border transition-colors cursor-pointer ${
-                            mood.value === selectedRating
-                              ? 'border-purple-500 bg-purple-50 text-purple-700'
-                              : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50'
-                          }`}
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          {mood.label}
-                        </motion.button>
-                      ))}
-                    </div>
+                {/* New Mood Button */}
+                {isSignedIn && (
+                  <motion.button
+                    onClick={() => setShowNewMoodModal(true)}
+                    className='group relative bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 flex items-center space-x-2 cursor-pointer'
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <motion.div
+                      animate={{ rotate: [0, 180, 360] }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        repeatDelay: 3,
+                      }}
+                    >
+                      <AppEmoji name='plus' width={20} />
+                    </motion.div>
+                    <span>Share Your Mood</span>
+                    <motion.div
+                      className='absolute inset-0 rounded-xl bg-white opacity-0 group-hover:opacity-20 transition-opacity'
+                      initial={false}
+                    />
+                  </motion.button>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Desktop Layout: Sidebar + Content */}
+            <div className='flex flex-col lg:flex-row gap-8'>
+              {/* Left Sidebar - Filters (Desktop) */}
+              <motion.aside
+                className='lg:w-80 lg:sticky lg:top-24 lg:h-fit'
+                variants={fadeInUp}
+                initial='hidden'
+                animate='visible'
+                transition={{ delay: 0.2 }}
+              >
+                <div className='bg-white/60 backdrop-blur-sm border border-gray-100 rounded-2xl p-6 shadow-sm space-y-6'>
+                  {/* Quick Stats - Now First */}
+                  <div className='grid grid-cols-2 gap-3'>
+                    <motion.div
+                      className='bg-gradient-to-br from-blue-50 to-purple-50 p-4 rounded-lg border border-blue-100'
+                      whileHover={{ scale: 1.02 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                    >
+                      <div className='flex items-center justify-between mb-1'>
+                        <span className='text-xs text-gray-600 font-medium'>
+                          Total Moods
+                        </span>
+                        <AppEmoji name='sparkles' width={14} />
+                      </div>
+                      <p className='text-2xl font-bold text-gray-900'>
+                        {moods.length > 0 ? `${moods.length}+` : '...'}
+                      </p>
+                    </motion.div>
+                    <motion.div
+                      className='bg-gradient-to-br from-orange-50 to-red-50 p-4 rounded-lg border border-orange-100'
+                      whileHover={{ scale: 1.02 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <div className='flex items-center justify-between mb-1'>
+                        <span className='text-xs text-gray-600 font-medium'>
+                          Avg Rating
+                        </span>
+                        <AppEmoji name='fire' width={14} />
+                      </div>
+                      <p className='text-2xl font-bold text-gray-900'>
+                        {moods.length > 0
+                          ? (
+                              moods.reduce((acc, m) => acc + m.rating, 0) /
+                              moods.length
+                            ).toFixed(1)
+                          : '...'}
+                      </p>
+                    </motion.div>
                   </div>
 
-                  {/* Search Bar */}
+                  {/* Search Bar - Second */}
                   <div>
                     <label className='block text-sm font-medium text-gray-700 mb-3'>
                       <AppEmoji
@@ -512,250 +562,274 @@ export default function ExplorePage() {
                     </div>
                   </div>
 
-                  {/* Quick Stats */}
-                  <div className='grid grid-cols-2 gap-3'>
-                    <motion.div
-                      className='bg-gradient-to-br from-blue-50 to-purple-50 p-3 rounded-lg border border-blue-100'
-                      whileHover={{ scale: 1.02 }}
-                    >
-                      <div className='flex items-center justify-between'>
-                        <span className='text-xs text-gray-600'>
-                          Total Moods
-                        </span>
-                        <AppEmoji name='sparkles' width={14} />
-                      </div>
-                      <p className='text-lg font-semibold text-gray-900 mt-1'>
-                        {moods.length > 0 ? `${moods.length}+` : '...'}
-                      </p>
-                    </motion.div>
-                    <motion.div
-                      className='bg-gradient-to-br from-orange-50 to-red-50 p-3 rounded-lg border border-orange-100'
-                      whileHover={{ scale: 1.02 }}
-                    >
-                      <div className='flex items-center justify-between'>
-                        <span className='text-xs text-gray-600'>
-                          Avg Rating
-                        </span>
-                        <AppEmoji name='fire' width={14} />
-                      </div>
-                      <p className='text-lg font-semibold text-gray-900 mt-1'>
-                        {moods.length > 0
-                          ? (
-                              moods.reduce((acc, m) => acc + m.rating, 0) /
-                              moods.length
-                            ).toFixed(1)
-                          : '...'}
-                      </p>
-                    </motion.div>
+                  {/* Divider */}
+                  <div className='border-t border-gray-100'></div>
+
+                  {/* Tech Filter - Third */}
+                  <div>
+                    <label className='block text-sm font-medium text-gray-700 mb-3'>
+                      <AppEmoji
+                        name='laptop'
+                        width={16}
+                        className='inline mr-2'
+                      />
+                      Filter by Technology
+                    </label>
+                    <TechFilter
+                      technologies={technologies}
+                      selectedTech={selectedTech}
+                      onSelectTech={(tech) =>
+                        setSelectedTech(tech === 'All' ? 'all' : tech)
+                      }
+                    />
+                  </div>
+
+                  {/* Mood Filter - Last */}
+                  <div>
+                    <label className='block text-sm font-medium text-gray-700 mb-3'>
+                      <AppEmoji
+                        name='bar chart'
+                        width={16}
+                        className='inline mr-2'
+                      />
+                      Filter by Mood
+                    </label>
+                    <div className='flex flex-wrap gap-2'>
+                      {moodFilters.map((mood) => (
+                        <motion.button
+                          key={mood.value}
+                          onClick={() => setSelectedRating(mood.value)}
+                          className={`px-3 py-1.5 text-sm rounded-lg border transition-colors cursor-pointer ${
+                            mood.value === selectedRating
+                              ? 'border-purple-500 bg-purple-50 text-purple-700'
+                              : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50'
+                          }`}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          {mood.label}
+                        </motion.button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.aside>
 
-            {/* Loading State */}
-            {loading ? (
-              <div className='text-center py-12'>
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  className='inline-block'
-                >
-                  <AppEmoji name='gear' width={32} />
-                </motion.div>
-                <p className='text-gray-600 mt-4'>Loading moods...</p>
-              </div>
-            ) : (
-              <>
-                {/* Mood Feed */}
-                <motion.div
-                  className='space-y-6'
-                  variants={staggerContainer}
-                  initial='hidden'
-                  animate='visible'
-                >
-                  {moods.map((mood, index) => (
+              {/* Right Content - Mood Feed */}
+              <div className='flex-1'>
+                {/* Loading State */}
+                {loading ? (
+                  <div className='text-center py-12'>
                     <motion.div
-                      key={mood.id}
-                      className='bg-white/70 backdrop-blur-sm border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300'
-                      variants={fadeInUp}
-                      whileHover={{ scale: 1.01, y: -2 }}
-                      transition={{ type: 'spring', stiffness: 300 }}
+                      animate={{ rotate: 360 }}
+                      transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: 'linear',
+                      }}
+                      className='inline-block'
                     >
-                      <div className='flex items-start space-x-4'>
-                        {/* Emoji */}
+                      <AppEmoji name='gear' width={32} />
+                    </motion.div>
+                    <p className='text-gray-600 mt-4'>Loading moods...</p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Mood Feed */}
+                    <motion.div
+                      className='space-y-6'
+                      variants={staggerContainer}
+                      initial='hidden'
+                      animate='visible'
+                    >
+                      {moods.map((mood, index) => (
                         <motion.div
-                          className='flex-shrink-0'
-                          animate={{
-                            rotate: [0, 5, -5, 0],
-                            scale: [1, 1.05, 1],
-                          }}
-                          transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            delay: index * 0.5,
-                          }}
+                          key={mood.id}
+                          className='bg-white/70 backdrop-blur-sm border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300'
+                          variants={fadeInUp}
+                          whileHover={{ scale: 1.01, y: -2 }}
+                          transition={{ type: 'spring', stiffness: 300 }}
                         >
-                          <AppEmoji
-                            name={getEmojiName(mood.emoji)}
-                            width={48}
-                          />
-                        </motion.div>
+                          <div className='flex items-start space-x-4'>
+                            {/* Emoji */}
+                            <motion.div
+                              className='flex-shrink-0'
+                              animate={{
+                                rotate: [0, 5, -5, 0],
+                                scale: [1, 1.05, 1],
+                              }}
+                              transition={{
+                                duration: 3,
+                                repeat: Infinity,
+                                delay: index * 0.5,
+                              }}
+                            >
+                              <AppEmoji
+                                name={getEmojiName(mood.emoji)}
+                                width={48}
+                              />
+                            </motion.div>
 
-                        {/* Content */}
-                        <div className='flex-1 min-w-0'>
-                          {/* Header */}
-                          <div className='flex items-center justify-between mb-2'>
-                            <div className='flex items-center space-x-3'>
-                              <span className='font-medium text-gray-900'>
-                                @{getUsernameFromEmail(mood.user.email)}
-                              </span>
-                              <div className='flex items-center space-x-1'>
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                  <div
-                                    key={i}
-                                    className={`w-2 h-2 rounded-full ${
-                                      i < mood.rating
-                                        ? 'bg-gradient-to-r from-blue-500 to-purple-500'
-                                        : 'bg-gray-200'
-                                    }`}
-                                  />
-                                ))}
-                                <span className='text-sm text-gray-500 ml-2'>
-                                  {mood.rating}/5
+                            {/* Content */}
+                            <div className='flex-1 min-w-0'>
+                              {/* Header */}
+                              <div className='flex items-center justify-between mb-2'>
+                                <div className='flex items-center space-x-3'>
+                                  <span className='font-medium text-gray-900'>
+                                    @{getUsernameFromEmail(mood.user.email)}
+                                  </span>
+                                  <div className='flex items-center space-x-1'>
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                      <div
+                                        key={i}
+                                        className={`w-2 h-2 rounded-full ${
+                                          i < mood.rating
+                                            ? 'bg-gradient-to-r from-blue-500 to-purple-500'
+                                            : 'bg-gray-200'
+                                        }`}
+                                      />
+                                    ))}
+                                    <span className='text-sm text-gray-500 ml-2'>
+                                      {mood.rating}/5
+                                    </span>
+                                  </div>
+                                </div>
+                                <span className='text-sm text-gray-400'>
+                                  {getRelativeTime(mood.date)}
                                 </span>
                               </div>
+
+                              {/* Comment */}
+                              {mood.comment && (
+                                <p className='text-gray-700 mb-3 leading-relaxed'>
+                                  {mood.comment}
+                                </p>
+                              )}
+
+                              {/* Tech Tag and Actions */}
+                              <div className='flex items-center justify-between'>
+                                {mood.tech && (
+                                  <span className='inline-flex items-center px-3 py-1 rounded-full text-sm bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 border border-blue-200'>
+                                    <AppEmoji
+                                      name='gear'
+                                      width={14}
+                                      className='mr-1'
+                                    />
+                                    {mood.tech}
+                                  </span>
+                                )}
+
+                                {/* Actions */}
+                                <div className='flex items-center space-x-2'>
+                                  <motion.button
+                                    className='p-2 rounded-lg hover:bg-gray-100 transition-colors'
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                  >
+                                    <AppEmoji name='red heart' width={18} />
+                                  </motion.button>
+                                  <motion.button
+                                    className='p-2 rounded-lg hover:bg-gray-100 transition-colors'
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                  >
+                                    <AppEmoji
+                                      name='speech balloon'
+                                      width={18}
+                                    />
+                                  </motion.button>
+                                  <motion.button
+                                    className='p-2 rounded-lg hover:bg-gray-100 transition-colors'
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                  >
+                                    <AppEmoji name='bookmark' width={18} />
+                                  </motion.button>
+                                </div>
+                              </div>
                             </div>
-                            <span className='text-sm text-gray-400'>
-                              {getRelativeTime(mood.date)}
-                            </span>
                           </div>
-
-                          {/* Comment */}
-                          {mood.comment && (
-                            <p className='text-gray-700 mb-3 leading-relaxed'>
-                              {mood.comment}
-                            </p>
-                          )}
-
-                          {/* Tech Tag and Actions */}
-                          <div className='flex items-center justify-between'>
-                            {mood.tech && (
-                              <span className='inline-flex items-center px-3 py-1 rounded-full text-sm bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 border border-blue-200'>
-                                <AppEmoji
-                                  name='gear'
-                                  width={14}
-                                  className='mr-1'
-                                />
-                                {mood.tech}
-                              </span>
-                            )}
-
-                            {/* Actions */}
-                            <div className='flex items-center space-x-2'>
-                              <motion.button
-                                className='p-2 rounded-lg hover:bg-gray-100 transition-colors'
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                              >
-                                <AppEmoji name='red heart' width={18} />
-                              </motion.button>
-                              <motion.button
-                                className='p-2 rounded-lg hover:bg-gray-100 transition-colors'
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                              >
-                                <AppEmoji name='speech balloon' width={18} />
-                              </motion.button>
-                              <motion.button
-                                className='p-2 rounded-lg hover:bg-gray-100 transition-colors'
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                              >
-                                <AppEmoji name='bookmark' width={18} />
-                              </motion.button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                        </motion.div>
+                      ))}
                     </motion.div>
-                  ))}
-                </motion.div>
 
-                {/* Load More Button */}
-                {hasMore && (
-                  <motion.div
-                    className='text-center mt-12'
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1 }}
-                  >
-                    <motion.button
-                      onClick={handleLoadMore}
-                      disabled={loadingMore}
-                      className='bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg hover:from-blue-700 hover:to-purple-700 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
-                      whileHover={{
-                        scale: loadingMore ? 1 : 1.05,
-                        y: loadingMore ? 0 : -2,
-                      }}
-                      whileTap={{ scale: loadingMore ? 1 : 0.95 }}
-                      transition={{ type: 'spring', stiffness: 300 }}
-                    >
-                      {loadingMore ? (
-                        <div className='flex items-center space-x-2'>
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{
-                              duration: 1,
-                              repeat: Infinity,
-                              ease: 'linear',
-                            }}
-                          >
-                            <AppEmoji name='gear' width={20} />
-                          </motion.div>
-                          <span>Loading...</span>
-                        </div>
-                      ) : (
-                        'Load More Moods'
-                      )}
-                    </motion.button>
-                  </motion.div>
-                )}
+                    {/* Load More Button */}
+                    {hasMore && (
+                      <motion.div
+                        className='text-center mt-12'
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1 }}
+                      >
+                        <motion.button
+                          onClick={handleLoadMore}
+                          disabled={loadingMore}
+                          className='bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl text-lg hover:from-blue-700 hover:to-purple-700 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer'
+                          whileHover={{
+                            scale: loadingMore ? 1 : 1.05,
+                            y: loadingMore ? 0 : -2,
+                          }}
+                          whileTap={{ scale: loadingMore ? 1 : 0.95 }}
+                          transition={{ type: 'spring', stiffness: 300 }}
+                        >
+                          {loadingMore ? (
+                            <div className='flex items-center space-x-2'>
+                              <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{
+                                  duration: 1,
+                                  repeat: Infinity,
+                                  ease: 'linear',
+                                }}
+                              >
+                                <AppEmoji name='gear' width={20} />
+                              </motion.div>
+                              <span>Loading...</span>
+                            </div>
+                          ) : (
+                            'Load More Moods'
+                          )}
+                        </motion.button>
+                      </motion.div>
+                    )}
 
-                {/* No more moods message */}
-                {!hasMore && moods.length > 0 && (
-                  <motion.div
-                    className='text-center mt-12'
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  >
-                    <p className='text-gray-500'>
-                      You&apos;ve seen all the moods! 🎉
-                    </p>
-                  </motion.div>
-                )}
+                    {/* No more moods message */}
+                    {!hasMore && moods.length > 0 && (
+                      <motion.div
+                        className='text-center mt-12'
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      >
+                        <p className='text-gray-500'>
+                          You&apos;ve seen all the moods! 🎉
+                        </p>
+                      </motion.div>
+                    )}
 
-                {/* Empty state */}
-                {!loading && moods.length === 0 && (
-                  <motion.div
-                    className='text-center py-12'
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  >
-                    <AppEmoji
-                      name='magnifying glass tilted left'
-                      width={48}
-                      className='mb-4'
-                    />
-                    <h3 className='text-xl font-medium text-gray-900 mb-2'>
-                      No moods found
-                    </h3>
-                    <p className='text-gray-600'>
-                      Try adjusting your filters to see more moods.
-                    </p>
-                  </motion.div>
+                    {/* Empty state */}
+                    {!loading && moods.length === 0 && (
+                      <motion.div
+                        className='text-center py-12'
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      >
+                        <AppEmoji
+                          name='magnifying glass tilted left'
+                          width={48}
+                          className='mb-4'
+                        />
+                        <h3 className='text-xl font-medium text-gray-900 mb-2'>
+                          No moods found
+                        </h3>
+                        <p className='text-gray-600'>
+                          Try adjusting your filters to see more moods.
+                        </p>
+                      </motion.div>
+                    )}
+                  </>
                 )}
-              </>
-            )}
+              </div>
+            </div>
           </div>
         </main>
 
@@ -786,6 +860,15 @@ export default function ExplorePage() {
             </p>
           </div>
         </motion.footer>
+
+        {/* New Mood Modal */}
+        {showNewMoodModal && (
+          <NewMoodModal
+            isOpen={showNewMoodModal}
+            onClose={() => setShowNewMoodModal(false)}
+            onSubmit={handleNewMood}
+          />
+        )}
       </div>
     </EmojiWrapper>
   );
