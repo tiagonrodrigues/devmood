@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { Mood as PrismaMood } from '@prisma/client';
+import { Mood } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
   try {
@@ -58,7 +60,9 @@ export async function GET(request: NextRequest) {
       include: {
         user: {
           select: {
-            email: true,
+            username: true,
+            firstName: true,
+            lastName: true,
           },
         },
       },
@@ -73,7 +77,11 @@ export async function GET(request: NextRequest) {
     const total = await prisma.mood.count({ where });
 
     // Transform data to match the expected format
-    const transformedMoods = moods.map((mood) => ({
+    const transformedMoods: Mood[] = (
+      moods as (PrismaMood & {
+        user: { username: string; firstName: string; lastName: string };
+      })[]
+    ).map((mood) => ({
       id: mood.id,
       emoji: mood.emoji,
       rating: mood.rating,
@@ -81,7 +89,9 @@ export async function GET(request: NextRequest) {
       tech: mood.tech,
       date: mood.date.toISOString(),
       user: {
-        email: mood.userId,
+        username: mood.user.username,
+        firstName: mood.user.firstName,
+        lastName: mood.user.lastName,
       },
     }));
 
