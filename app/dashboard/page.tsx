@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { Navbar } from '../components/Navbar';
 import prisma from '@/lib/prisma';
-import { Chart } from './Chart';
+import { Chart } from '../components/dashboard/Chart';
 import {
   Card,
   CardContent,
@@ -57,6 +57,8 @@ export default async function Dashboard() {
     }),
     rating: mood.rating,
   }));
+
+  // TODO: This should be fetched on the server side
 
   const recentComments = [
     {
