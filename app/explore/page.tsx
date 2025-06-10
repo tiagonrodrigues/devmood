@@ -4,31 +4,10 @@ import { useState, useEffect } from 'react';
 import * as motion from 'motion/react-client';
 import { EmojiWrapper, AppEmoji } from '../components/EmojiWrapper';
 import { Navbar } from '../components/Navbar';
-import { NewMoodModal } from '../components/NewMoodModal';
+import { NewMoodModal } from '../components/explore/NewMoodModal';
 import { useAuth } from '@clerk/nextjs';
+import { Mood, MoodsResponse } from '@/lib/types';
 
-// Types
-interface User {
-  email: string;
-}
-
-interface Mood {
-  id: string;
-  emoji: string;
-  rating: number;
-  comment: string | null;
-  tech: string | null;
-  date: string;
-  user: User;
-}
-
-interface MoodsResponse {
-  data: Mood[];
-  total: number;
-  hasMore: boolean;
-}
-
-// Convert emoji names to actual emojis for display
 const getEmojiName = (emoji: string): string => {
   const emojiMap: Record<string, string> = {
     '😊': 'smiling face with smiling eyes',
@@ -39,7 +18,7 @@ const getEmojiName = (emoji: string): string => {
     '🎉': 'party popper',
     '😅': 'grinning face with sweat',
     '🔥': 'fire',
-    '😵': 'face with crossed-out eyes',
+    '😵‍💫': 'face with spiral eyes',
     '✨': 'sparkles',
     '🎯': 'direct hit',
     '🧠': 'brain',
@@ -49,11 +28,6 @@ const getEmojiName = (emoji: string): string => {
   };
 
   return emojiMap[emoji] || 'smiling face';
-};
-
-// Get username from email
-const getUsernameFromEmail = (email: string): string => {
-  return email.split('@')[0];
 };
 
 // Format relative time
@@ -238,7 +212,7 @@ export default function ExplorePage() {
     { label: 'Rough (1-2)', value: '1' },
   ];
 
-  // Fetch technologies for filter
+  // Fetch technologies for filter - TEMPORARY - TODO: This should be fetched on the server side
   useEffect(() => {
     const fetchTechnologies = async () => {
       try {
@@ -256,7 +230,7 @@ export default function ExplorePage() {
     fetchTechnologies();
   }, []);
 
-  // Fetch moods
+  // Fetch moods - TEMPORARY - TODO: This should be fetched on the server side
   const fetchMoods = async (reset = false) => {
     try {
       if (reset) {
@@ -824,13 +798,15 @@ export default function ExplorePage() {
                               <div className='flex items-center space-x-3'>
                                 {/* Profile Picture Placeholder */}
                                 <div className='w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-400 flex items-center justify-center text-white font-semibold'>
-                                  {getUsernameFromEmail(mood.user.email)
-                                    .charAt(0)
-                                    .toUpperCase()}
+                                  {(mood.user.firstName?.charAt(0) ?? '') +
+                                    (mood.user.lastName?.charAt(0) ?? '')}
                                 </div>
                                 <div className='space-y-1'>
                                   <div className='font-medium text-gray-900 text-sm'>
-                                    @{getUsernameFromEmail(mood.user.email)}
+                                    {mood.user.firstName} {mood.user.lastName}
+                                  </div>
+                                  <div className='text-xs text-gray-500'>
+                                    @{mood.user.username}
                                   </div>
                                   <div className='flex items-center space-x-1'>
                                     {Array.from({ length: 5 }).map((_, i) => (
@@ -947,7 +923,10 @@ export default function ExplorePage() {
                               <div className='flex items-center justify-between mb-2'>
                                 <div className='flex items-center space-x-3'>
                                   <span className='font-medium text-gray-900'>
-                                    @{getUsernameFromEmail(mood.user.email)}
+                                    {mood.user.firstName} {mood.user.lastName}
+                                    <span className='text-sm text-gray-500 font-normal ml-1'>
+                                      @{mood.user.username}
+                                    </span>
                                   </span>
                                   <div className='flex items-center space-x-1'>
                                     {Array.from({ length: 5 }).map((_, i) => (
